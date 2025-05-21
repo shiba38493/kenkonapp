@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会社検索</title>
+  <style>
+    /* 既存の抽出ページと同じコンテナスタイル */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    header img {
+      height: 60px;
+      margin-right: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
+    /* ナビゲーション用ボタン */
+    .nav-button {
+      display: inline-block;
+      margin: 10px 10px 10px 0;
+      padding: 10px 20px;
+      background-color: rgb(31, 117, 191);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+    /* 検索セクション */
+    .search-section {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .search-box {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    /* 結果表示エリア */
+    .result-container {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      min-height: 100px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="{{ url_for('extract_all_form') }}">
+        <img src="{{ url_for('static', filename='nk-logo.jpg') }}" alt="ロゴ">
+      </a>
+      <h1>会社検索</h1>
+    </header>
+    
+    <!-- ページ間ナビゲーション -->
+    <div class="navigation">
+      <a class="nav-button" href="{{ url_for('extract_all_form') }}">抽出ページへ</a>
+    </div>
+    
+    <!-- 検索ボックス -->
+    <div class="search-section">
+      <input type="text" class="search-box" id="companySearchInput" placeholder="会社名を入力して検索">
+    </div>
+    
+    <!-- 結果表示エリア -->
+    <div class="result-container" id="searchResults">
+      <!-- AJAXで取得した結果がここに表示されます -->
+    </div>
+  </div>
+
+  <script>
+    // 入力が変化するたびにAJAXで検索候補を取得する処理
+    document.getElementById('companySearchInput').addEventListener('input', function() {
+      var query = this.value.trim();
+      // 入力が空の場合は結果エリアをクリア
+      if (query === "") {
+        document.getElementById('searchResults').innerHTML = "";
+        return;
+      }
+      // サーバ側の検索APIへリクエスト（GETメソッド）を送信
+      fetch('/company_search/api?query=' + encodeURIComponent(query))
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(function(data) {
+          // ここでは、APIが会社名の文字列の配列を返すものと仮定
+          var html = "";
+          if (data.length > 0) {
+            html += "<ul>";
+            data.forEach(function(company) {
+              html += "<li>" + company + "</li>";
+            });
+            html += "</ul>";
+          } else {
+            html = "<p>該当する会社は見つかりませんでした</p>";
+          }
+          document.getElementById('searchResults').innerHTML = html;
+        })
+        .catch(function(error) {
+          document.getElementById('searchResults').innerHTML = "<p>エラーが発生しました</p>";
+          console.error('Fetch error:', error);
+        });
+    });
+  </script>
+</body>
+</html>

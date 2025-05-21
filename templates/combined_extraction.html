@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>建設コンサル潜在顧客発見ナビ</title>
+  <style>
+    /* 全体を中央に配置するコンテナ */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    header img {
+      height: 60px;
+      margin-right: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
+    form {
+      margin-bottom: 30px;
+      text-align: left;
+      display: inline-block;
+      width: 100%;
+    }
+    select {
+      width: 100%;
+      max-width: 300px;
+      box-sizing: border-box;
+    }
+    .section {
+      border: 1px solid #ccc;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+    .section h2 {
+      margin-top: 0;
+    }
+    .info-box {
+      border: 1px solid #ccc;
+      padding: 15px;
+      border-radius: 8px;
+      width: 60%;
+      margin: 20px auto;
+      text-align: left;
+      background-color: #f9f9f9;
+    }
+    .capital-filter {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .capital-filter input {
+      width: 150px;
+      box-sizing: border-box;
+    }
+    /* ボタンのスタイル変更：角丸をなくし、背景色を青、文字色を白に */
+    button {
+      display: block;
+      margin: 0 auto;
+      padding: 10px 20px;
+      background-color: rgb(31, 117, 191);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    /* お知らせ欄用のスタイル */
+    .announcement-section {
+      margin-bottom: 20px;
+      padding: 0px 0;
+    }
+    /* NEWSのラベル（小さく中央揃え） */
+    .news-label {
+      text-align: center;
+      font-size: 0.8em;
+      margin: 0 0 0px 0;  /* 下部余白を0に */
+      padding: 0;
+    }
+    .announcement-section h2 {
+      text-align: center;
+      margin: 0px 0 20px 0;  /* 上部余白を5pxに、下部余白はそのまま */
+    }
+    .announcement-item {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 0.95em;
+    }
+    /* フッターノート用のスタイル */
+    .footer-note {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.95em;
+    }
+    .footer-note a {
+      color: blue;
+      text-decoration: underline;
+    }
+    /* ナビゲーション用ボタン */
+    .navigation {
+      margin-bottom: 0px;
+    }
+    .nav-button {
+      display: inline-block;
+      margin: 10px 10px 10px 0;
+      padding: 10px 20px;
+      background-color: rgb(31, 117, 191);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="{{ url_for('extract_all_form') }}">
+        <img src="{{ url_for('static', filename='nk-logo.jpg') }}" alt="ロゴ">
+      </a>
+      <h1>建設コンサル 潜在顧客発見ナビ</h1>
+    </header>
+
+    <!-- ページ間ナビゲーション -->
+    <div class="navigation">
+      <a class="nav-button" href="{{ url_for('company_search') }}">検索ページへ</a>
+    </div>
+    
+    <!-- お知らせ欄をヘッダーの下、フォームの上に配置 -->
+    <div class="announcement-section">
+      <p class="news-label">NEWS</p>
+      <h2>お知らせ</h2>
+      <div class="announcement-item">
+        <span class="date">2025/03/01</span>：<span class="text">国交省データを最新に更新しました。</span>
+      </div>
+      <div class="announcement-item">
+        <span class="date">2025/02/10</span>：<span class="text">会社データ抽出ツールを公開しました。</span>
+      </div>
+    </div>
+    
+    <form action="/extract_all" method="post">
+      <div class="section">
+        <h2>建設コンサルタント抽出</h2>
+        <label>
+          <input type="checkbox" name="include_consultant" value="yes" checked>
+          建設コンサルタントを含める
+        </label>
+        <br><br>
+        <label for="consultant_departments">部門を選択 (Ctrlで複数選択可):</label><br>
+        <select name="consultant_departments" id="consultant_departments" multiple size="10">
+          {% for dept in departments %}
+            <option value="{{ dept }}">{{ dept }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <label>建設コンサルタント内部抽出モード:</label>
+        <input type="radio" name="consultant_mode" value="or" checked> または (OR検索)
+        <input type="radio" name="consultant_mode" value="and"> かつ (AND検索)
+      </div>
+
+      <div class="section">
+        <h2>測量会社抽出</h2>
+        <label>
+          <input type="checkbox" name="include_survey" value="yes">
+          測量会社を含める
+        </label>
+        <p>※ 測量会社抽出は、同じ会社が複数行に渡って記載されているため、最初に出現した行のみを参照します。</p>
+      </div>
+
+      <div class="section">
+        <h2>地質会社抽出</h2>
+        <label>
+          <input type="checkbox" name="include_geology" value="yes">
+          地質会社を含める
+        </label>
+        <p>※ 地質会社抽出は自動的に全件抽出され、技術関係の値は「技術関係＿合計」から算出され、出力カラム名は「地質会社＿技術関係＿合計」となります。</p>
+      </div>
+      
+      <div class="section">
+        <h2>全体抽出モード</h2>
+        <label>全体の抽出モード:</label>
+        <input type="radio" name="overall_mode" value="or" checked> または (OR検索)
+        <input type="radio" name="overall_mode" value="and"> かつ (AND検索)
+        <p>※ AND検索の場合、両カテゴリーに共通する会社のみ出力されます。</p>
+      </div>
+      
+      <div class="section">
+        <h2>資本金フィルター</h2>
+        <div class="capital-filter">
+          <label for="capital_min">資本金:</label>
+          <input type="number" name="capital_min" id="capital_min" placeholder="例: 1000000">
+          <span>～</span>
+          <input type="number" name="capital_max" id="capital_max" placeholder="例: 100000000">
+        </div>
+        <p>※ 数値はExcelファイルの単位と同じです。指定しない場合は全件出力されます。</p>
+      </div>
+      
+      <button type="submit">抽出</button>
+    </form>
+    
+    <div class="info-box">
+      <p><注意事項></p>
+      <p>このシステムでは、あらかじめサーバに配置されたExcelファイルを使用して抽出を行います。</p>
+      <p>データは国土交通省より提供されているデータを参照します。</p>
+      <p>国土交通省では毎月更新されたデータが提供されていますが、本システムは毎月更新ではありません。（更新日はお知らせをご確認ください）</p>
+      <p><a href="https://www.mlit.go.jp/totikensangyo/const/totikensangyo_const_tk2_000059.html" target="_blank">国土交通省公式ページ</a></p>
+    </div>
+
+    <div class="info-box">
+      <p><参考リンク></p>
+      <p><a href="http://bisnksl2.n-koei.co.jp/AllianceInformation/Search.aspx" target="_blank">アライアンス情報管理システム「NARRES」</a></p>
+      <p><a href="https://nipponkoei1946.sharepoint.com/sites/HP/SitePages/%E5%90%8D%E5%88%BAde%E5%95%86%E5%A3%B2%E7%B9%81%E7%9B%9B.aspx" target="_blank">名刺de商売繁盛</a></p>
+    </div>
+
+    <div class="footer-note">
+      <p>
+        ご質問・ご感想などはこちらの <a href="https://nipponkoei1946.sharepoint.com/sites/digitalbusiness" target="_blank">アンケート</a> からお願い致します。
+      </p>
+    </div>
+  </div>
+</body>
+</html>

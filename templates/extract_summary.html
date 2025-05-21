@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>抽出結果</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    /* メインコンテナ: 件数表示やダウンロードボタンなど */
+    .main-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      text-align: center;
+    }
+    /* プレビューコンテナ: 結果プレビュー用。幅を広く設定 */
+    .preview-container {
+      max-width: 2000px;
+      margin: 30px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      text-align: left;
+    }
+    /* テーブルラッパー: 表部分だけスクロールできるようにする */
+    .table-wrapper {
+      max-height: 600px;
+      overflow-y: auto;
+      margin-top: 20px;
+      padding-top: 0;
+    }
+    /* テーブルのスタイル */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+      position: sticky;
+      top: -0px;
+      z-index: 2; /* ヘッダーが常に前面に表示されるように */
+      margin: 0;
+    }
+    /* ボタンのスタイル */
+    button {
+      padding: 10px 20px;
+      background-color: rgb(31, 117, 191);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 件数表示、ダウンロードボタン等を含むメインコンテナ -->
+  <div class="main-container">
+    <h2>{{ count }}件が抽出されました</h2>
+    <p>内容を確認後、下記のダウンロードボタンを押してください。</p>
+    <a href="{{ url_for('download', token=token) }}">
+      <button>ダウンロード</button>
+    </a>
+    <br><br>
+    <a href="{{ url_for('extract_all_form') }}">戻る</a>
+  </div>
+
+  <!-- 結果プレビュー表示用のコンテナ -->
+  <div class="preview-container">
+    <h3>抽出結果プレビュー(上位1000件)</h3>
+    <div class="table-wrapper">
+      {{ table_html|safe }}
+    </div>
+  </div>
+
+</body>
+</html>
+
